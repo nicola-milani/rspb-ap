@@ -1,0 +1,4 @@
+launch install.sh to install the manage.sh to /usr/bin
+use manage.sh --help to get options
+
+edit /etc/athena/setup.sh for configurations
