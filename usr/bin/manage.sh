@@ -131,15 +131,18 @@ do_set_wpa_supplicant(){
     NAME=$1
     PASSWORD=$2
     if [ -z $NAME ]; then 
-        cat >/etc/wpa_supplicant/wpa_supplicant.conf <<EOF
-country=IT
-ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
-update_config=1
-network={
-    ssid="ESSID"
-    psk="PASSWORD"
-}
-EOF
+#         cat >/etc/wpa_supplicant/wpa_supplicant.conf <<EOF
+# country=IT
+# ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+# update_config=1
+# network={
+#     ssid="ESSID"
+#     psk="PASSWORD"
+# }
+# EOF
+       echo "no network name"
+       exit 1
+       
     elif [ -z $PASSWORD ]; then
             cat >/etc/wpa_supplicant/wpa_supplicant.conf <<EOF
 country=IT
@@ -246,14 +249,21 @@ EOF
 }
 
 do_reset() {
+    ifdown ${NIC}
     rm -f /etc/network/interfaces.d/wlan0.conf
+      cat >/etc/network/interfaces.d/wlan0.conf <<EOF
+auto ${NIC}
+allow-hotplug ${NIC}
+iface ${NIC} inet dhcp
+iface default inet dhcp
+EOF
     systemctl enable hostapd
     systemctl enable dnsmasq
     systemctl start hostapd
     systemctl start dnsmasq
     do_set_dhcpcd
     systemctl daemon-reload
-    systemctl start dhcpcd
+    systemctl restart dhcpcd
 }
 
 do_getStatus() {
@@ -296,7 +306,7 @@ usage() {
         --getStatus                          show current running mode
 
     Edit and create
-        --connect <config_file>              connect to essid with selected configuration file
+        --connect <NAME> <PASSWORD>              connect to essid with NAME and PASSWORD
         --reset                              return to default mode
         --init                               rebuild default raspberry
         --help :                             show this messge
