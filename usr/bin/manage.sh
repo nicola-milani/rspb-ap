@@ -13,6 +13,8 @@ rspb_init() {
     apt update
     apt upgrade -y
     apt install dnsmasq hostapd -y
+    apt install nginx libnss-mdns -y
+
     systemctl stop dnsmasq
     systemctl stop hostapd
     systemctl enable ssh
@@ -107,7 +109,6 @@ EOF
 
     sed -i 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g' /etc/sysctl.conf
 
-    apt install nginx libnss-mdns -y
 
     echo "athena-security-board" >/etc/hostname
 
